@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Test</title>
+        <script type="text/javascript" src="d3/d3.js"></script>
+    </head>
+    <body>
+        <div id = "meth"></div>
+        <div id = "bar-demo"></div>
+        <script type="text/javascript">
+        var dataset = [ 5, 10, 15, 20, 25 ];
+        var w = 500;
+        var h = 500;
+        var barPadding = 1;
+        var x, y, color;
+        
+        var csv2014;
+        var cityCount = {};
+        d3.csv("csv/2014.csv", function (methdata) {
+            csv2014 = methdata;
+           
+            for (var i in csv2014) {
+                if (cityCount.hasOwnProperty(csv2014[i].city)) {
+                    cityCount[csv2014[i].city]++;
+                } else {
+                    cityCount[csv2014[i].city] = 1;
+                }
+            }
+            
+            x = d3.scale.linear()
+                .domain([0, d3.entries(cityCount).length])
+                .range([0, w]);
+            y = d3.scale.linear()
+                .domain([0, d3.max(d3.values(cityCount))])
+                .rangeRound([0, h]);
+            color = d3.scale.linear()
+                .domain([0, d3.max(d3.values(cityCount))])
+                .range(["#bfa324", "#bf0d9c"]);
+                
+            var svg = d3.select("body")
+                .append("svg:svg")
+                .attr("width", w)
+                .attr("height", h);
+                
+            var rects = svg.selectAll("rect")
+                .data(dataset)
+                .enter()
+                .append("rect");
+                
+            rects.attr("x", function (d, i) {
+                return i * (w / dataset.length);
+            })
+            .attr("y", function(d) { return h - d; })
+            .attr("width", w / dataset.length - barPadding)
+            .attr("height", function(d) { return d * 4; });
+             
+            
+            var methSvg = d3.select("#meth")
+                .append("svg:svg")
+                .attr("width", w)
+                .attr("height", h);
+                
+            methSvg.selectAll("rect")
+                .data(d3.entries(cityCount))
+                .enter()
+                .append("svg:rect")
+                .attr("x", function(d, i) { return x(i); } )
+                .attr("y", function(d) { return h - y(d.value) })
+                .attr("height", function(d) { return y(d.value) })
+                .attr("width", 20)
+                .attr("fill", function(d) { return color(d.value); });
+                
+        });
+        
+        </script>
+    </body>
+</html>
