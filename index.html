@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>D3 Test</title>
-        <script type="text/javascript" src="d3/d3.js"></script>
-    </head>
+<head>
+    <meta charset="utf-8">
+    <title>D3 Test</title>
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+</head>
     <body>
         <div id = "meth"></div>
         <div id = "methside"></div>
@@ -28,7 +41,7 @@
                     cityCount[csv2014[i].city] = 1;
                 }
             }
-            
+
             x = d3.scale.linear()
                 .domain([0, d3.entries(cityCount).length])
                 .range([0, w]);
@@ -44,15 +57,12 @@
                 .range([0, w]);
             var ySide = d3.scale.linear()
                 .domain([0, d3.entries(cityCount).length])
-                .rangeRound([0, h]);
-            
-                
+                .rangeRound([0, h-20]);
+
             var svg = d3.select("body")
                 .append("svg:svg")
                 .attr("width", w)
                 .attr("height", h);
-                
-            
             
             var methSvg = d3.select("#meth")
                 .append("svg:svg")
@@ -93,7 +103,18 @@
                 .attr("y", function(d, i) { return ySide(i); })
                 .attr("dy", ".80em")
                 .attr("font-family", "Arial")
-                .text(function(d) { return d.key; });
+                .attr("transform", "translate(0, 2)")
+                .text(function(d) { return d.key + " : " + d.value; });
+
+            var xAxis = d3.svg.axis()
+                .scale(xSide)
+                .orient("bottom");
+
+            methSideSvg.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + (h - 20) + ")")
+                .call(xAxis);
+
                 
         });
         
